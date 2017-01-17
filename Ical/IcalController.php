@@ -5,8 +5,6 @@ namespace Statamic\Addons\Ical;
 use Carbon\Carbon;
 use Statamic\API\Config;
 use Statamic\Extend\Controller;
-use Sabre\VObject\Component\VAlarm;
-use Sabre\VObject\Component\VEvent;
 use Sabre\VObject\Component\VCalendar;
 
 class IcalController extends Controller
