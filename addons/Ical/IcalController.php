@@ -5,9 +5,9 @@ namespace Statamic\Addons\Ical;
 use Carbon\Carbon;
 use Statamic\API\Config;
 use Statamic\Extend\Controller;
-use Eluceo\iCal\Component\Alarm;
-use Eluceo\iCal\Component\Event;
-use Eluceo\iCal\Component\Calendar;
+use Sabre\VObject\Component\VAlarm;
+use Sabre\VObject\Component\VEvent;
+use Sabre\VObject\Component\VCalendar;
 
 class IcalController extends Controller
 {
@@ -26,8 +26,8 @@ class IcalController extends Controller
         // get the event data
         $data = $this->storage->getYAML(request('id'));
 
-        /** @var \Eluceo\iCal\Component\Calendar $vCalendar */
-        $vCalendar = new Calendar(Config::getSiteUrl());
+        /** @var \Sabre\VObject\Component\VCalendar $vCalendar */
+        $vCalendar = new VCalendar(["URL" => Config::getSiteUrl()]);
 
         // convert date to GMT as that's what iCal wants
         /** @var \Carbon\Carbon $start_date */
@@ -40,39 +40,34 @@ class IcalController extends Controller
         $end_date->setTimezone('UTC');
         //$end_date = Carbon::createFromTimestamp($data['end_date'])->setTimezone('UTC');
 
-        /** @var \Eluceo\iCal\Component\Event $vEvent */
-        $vEvent = new Event();
-
-        $vEvent->setDtStart($start_date)->setDtEnd($end_date);
+        /** @var \Sabre\VObject\Component\VEvent $vEvent */
+        $vEvent = $vCalendar->add('VEVENT', [
+            'DTSTART' => $start_date,
+            'DTEND' => $end_date,
+        ]);
 
         if (isset($data['summary']))
         {
-            $vEvent->setSummary($data['summary']);
+            $vEvent->add('SUMMARY', $data['summary']);
         }
 
         if (isset($data['description']))
         {
-            $vEvent->setDescription($data['description']);
+            $vEvent->add('DESCRIPTION', $data['description']);
         }
 
         if (isset($data['url']))
         {
-            $vEvent->setUrl($data['url']);
+            $vEvent->add('URL', $data['url']);
         }
 
-        // @todo this doesn't work
-        /** @var \Eluceo\iCal\Component\Alarm $vAlarm */
-        $vAlarm = new Alarm();
-        $vAlarm
-            ->setAction(Alarm::ACTION_DISPLAY)
-            ->setTrigger('-P1H') // one hour before
-            ->setDescription($data['summary']);
+        $vEvent->add('VALARM', [
+            'ACTION' => 'DISPLAY',
+            'TRIGGER' => '-PT1H',
+            'DESCRIPTION' => $data['summary'],
+        ]);
 
-        $vEvent->addComponent($vAlarm);
-
-        $vCalendar->addComponent($vEvent);
-
-        response($vCalendar->render())
+        response($vCalendar->serialize())
             ->header('Content-Type', 'text/calendar; charset=utf-8')
             ->header('Content-Disposition', 'attachment; filename="cal.ics"')
             ->send();
