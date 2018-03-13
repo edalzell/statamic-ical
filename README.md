@@ -5,7 +5,7 @@ A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Us
 
 ## Installing
 1. Copy the folder contents to your Statamic `site\addons` directory
-2. Update your addons, i.e. `php please addons:refresh`
+2. Update your addons, i.e. `php please update:addons`
 2. There is no step 3
 
 ## Usage
