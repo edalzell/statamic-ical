@@ -1,7 +1,7 @@
 iCal
 =================
 
-A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Use if you have events and want people to be to add to their calender.
+A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Use if you have events and want people to be able to add to their calender.
 
 ## Installing
 1. Copy the folder contents to your Statamic `site\addons` directory
@@ -19,6 +19,8 @@ A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Us
     url="myevents.com" }}">Add to your calendar</a>
 ```
 You need to pass it a unique id so that the details can be stored and retrieved. If you're on some normal content, the `id` of the page/entry would be fine.
+
+`start_date` & `end_date` should be unix timestamps.
 
 `summary`, `description` and `url` are all optional.
 
