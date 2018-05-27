@@ -1,12 +1,12 @@
 iCal
 =================
 
-A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Use if you have events and want people to be able to add to their calender.
+A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Use if you have events and want people to be to add to their calender.
 
 ## Installing
 1. Copy the folder contents to your Statamic `site\addons` directory
 2. Update your addons, i.e. `php please update:addons`
-2. There is no step 3
+3. There is no step 3
 
 ## Usage
 ```

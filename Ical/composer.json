@@ -1,6 +1,6 @@
 {
     "name": "erin-dalzell/ical",
     "require": {
-        "sabre/vobject" : "*"
+        "eluceo/ical" : "0.11"
     }
 }

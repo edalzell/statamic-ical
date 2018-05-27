@@ -3,71 +3,54 @@
 namespace Statamic\Addons\Ical;
 
 use Carbon\Carbon;
+use Eluceo\iCal\Component\Alarm;
+use Eluceo\iCal\Component\Calendar;
+use Eluceo\iCal\Component\Event;
 use Statamic\API\Config;
 use Statamic\Extend\Controller;
-use Sabre\VObject\Component\VCalendar;
 
 class IcalController extends Controller
 {
-    /**
-     * Maps to your route definition in routes.yaml
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return $this->view('index');
-    }
-
     public function getDownload()
     {
-        // get the event data
-        $data = $this->storage->getYAML(request('id'));
+        // @todo this doesn't work
+        $vAlarm = new Alarm();
+        $vAlarm
+            ->setAction(Alarm::ACTION_DISPLAY)
+            ->setTrigger('-P1H') // one hour before
+            ->setDescription(request('summary'));
 
-        /** @var \Sabre\VObject\Component\VCalendar $vCalendar */
-        $vCalendar = new VCalendar(["URL" => Config::getSiteUrl()]);
+        $vEvent = new Event();
+        $vEvent
+            ->setDtStart($this->getCarbon(request('start_date')))
+            ->setDtEnd($this->getCarbon(request('end_date')))
+            ->setSummary(request('summary'))
+            ->setDescription(request('description'))
+            ->setUrl(request('url'))
+            ->addComponent($vAlarm);
 
-        // convert date to GMT as that's what iCal wants
-        /** @var \Carbon\Carbon $start_date */
-        $start_date = new Carbon($data['start_date']);
-        $start_date->setTimezone('UTC');
-        //$start_date = Carbon::createFromTimestamp($data['start_date'])->setTimezone('UTC');
+        $vCalendar = new Calendar(Config::getSiteUrl());
+        $vCalendar->addComponent($vEvent);
 
-        /** @var \Carbon\Carbon $end_date */
-        $end_date = new Carbon($data['end_date']);
-        $end_date->setTimezone('UTC');
-        //$end_date = Carbon::createFromTimestamp($data['end_date'])->setTimezone('UTC');
-
-        /** @var \Sabre\VObject\Component\VEvent $vEvent */
-        $vEvent = $vCalendar->add('VEVENT', [
-            'DTSTART' => $start_date,
-            'DTEND' => $end_date,
-        ]);
-
-        if (isset($data['summary']))
-        {
-            $vEvent->add('SUMMARY', $data['summary']);
-        }
-
-        if (isset($data['description']))
-        {
-            $vEvent->add('DESCRIPTION', $data['description']);
-        }
-
-        if (isset($data['url']))
-        {
-            $vEvent->add('URL', $data['url']);
-        }
-
-        $vEvent->add('VALARM', [
-            'ACTION' => 'DISPLAY',
-            'TRIGGER' => '-PT1H',
-            'DESCRIPTION' => $data['summary'],
-        ]);
-
-        response($vCalendar->serialize())
+        response($vCalendar->render())
             ->header('Content-Type', 'text/calendar; charset=utf-8')
             ->header('Content-Disposition', 'attachment; filename="cal.ics"')
             ->send();
+    }
+
+    /**
+     * Get the Carbon version of the datetime
+     *
+     * @param string|int $datetime foo
+     *
+     * @return Carbon\Carbon
+     */
+    private function getCarbon($datetime)
+    {
+        if (is_numeric($datetime)) {
+            return Carbon::createFromTimestamp($datetime)->setTimezone('UTC');
+        } else {
+            return Carbon::parse($datetime)->setTimezone('UTC')->setTimezone('UTC');
+        }
     }
 }
