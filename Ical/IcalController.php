@@ -13,11 +13,10 @@ class IcalController extends Controller
 {
     public function getDownload()
     {
-        // @todo this doesn't work
         $vAlarm = new Alarm();
         $vAlarm
             ->setAction(Alarm::ACTION_DISPLAY)
-            ->setTrigger('-P1H') // one hour before
+            ->setTrigger('-PT1H') // one hour before
             ->setDescription(request('summary'));
 
         $vEvent = new Event();
