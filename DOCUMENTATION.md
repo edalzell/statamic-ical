@@ -15,11 +15,12 @@ A Statamic V2 add-on that creates an iCal file that can be easily downloaded. Us
     end_date="{ end }" 
     summary="foo" 
     description="bar" 
+    location="baz" 
     url="myevents.com" }}">Add to your calendar</a>
 ```
 `start_date` & `end_date` could be a php date/time or a unix timestamp.
 
-`summary`, `description` and `url` are all optional.
+`summary`, `description`, `location` and `url` are all optional.
 
 ## LICENSE
 

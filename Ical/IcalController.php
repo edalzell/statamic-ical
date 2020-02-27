@@ -24,6 +24,7 @@ class IcalController extends Controller
             ->setDtStart($this->getCarbon(request('start_date')))
             ->setDtEnd($this->getCarbon(request('end_date')))
             ->setSummary(request('summary'))
+            ->setLocation(request('location'))
             ->setDescription(request('description'))
             ->setUrl(request('url'))
             ->addComponent($vAlarm);
