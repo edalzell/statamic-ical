@@ -1,6 +1,6 @@
 {
     "name": "erin-dalzell/ical",
     "require": {
-        "eluceo/ical" : "0.16.1"
+        "eluceo/ical" : "2.0.0"
     }
 }
